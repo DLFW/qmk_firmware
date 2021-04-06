@@ -19,13 +19,16 @@
 enum layer_names {
     BASE,
     COMP,
-    NAVI
+    NAVI,
+    MOUS
 };
 
 #define T_COMP TT(BASE)
 #define T_NAVI TT(NAVI)
 #define C_LEFT MT(MOD_LCTL, KC_DEL)
 #define C_RIGT MT(MOD_RCTL, KC_BSPC)
+#define T_MOUS TO(MOUS)
+#define T_BASE TO(BASE)
 
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
@@ -54,7 +57,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [NAVI] = LAYOUT(
         _______, KC_F13,  KC_HOME, KC_PGUP, KC_PGDN, KC_END,      KC_HOME, KC_PGUP, KC_PGDN, KC_END,  KC_VOLU, KC_F15,  \
         _______, KC_F14,  KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT,     KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_VOLD, KC_F16,  \
-        _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, KC_MPLY, KC_MPRV, KC_MNXT, KC_MUTE, _______, \
+        _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, T_MOUS,      T_MOUS,  KC_MPLY, KC_MPRV, KC_MNXT, KC_MUTE, _______, \
+        _______, _______, _______,                                                           _______, _______, _______, \
+                          _______, _______, _______, _______,     _______, _______, _______, _______,                   \
+                                   _______, _______,                       _______, _______                             \
+    ),
+    [MOUS] = LAYOUT(
+        XXXXXXX, KC_WH_U, KC_BTN1, KC_BTN3, KC_BTN2, XXXXXXX,     XXXXXXX, KC_BTN1, KC_BTN3, KC_BTN2, KC_WH_U, XXXXXXX, \
+        XXXXXXX, KC_WH_D, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R,     KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_WH_D, XXXXXXX, \
+        _______, XXXXXXX, KC_ACL0, KC_ACL1, KC_ACL1, T_BASE,      T_BASE,  KC_ACL0, KC_ACL1, KC_ACL2, XXXXXXX, _______, \
         _______, _______, _______,                                                           _______, _______, _______, \
                           _______, _______, _______, _______,     _______, _______, _______, _______,                   \
                                    _______, _______,                       _______, _______                             \
