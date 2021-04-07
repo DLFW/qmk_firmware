@@ -14,21 +14,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include <eeprom.h>
+
+rgblight_config_t col_base_layer;
+rgblight_config_t col_comp_layer;
+rgblight_config_t col_navi_layer;
+rgblight_config_t col_mous_layer;
+rgblight_config_t col_meta_layer;
+rgblight_config_t *active_color = 0;
+uint8_t cc_keys = 0;
+
+#define EECONFIG_COLOR_BASE_LAYER (uint32_t *)64
+#define EECONFIG_COLOR_COMP_LAYER (uint32_t *)68
+#define EECONFIG_COLOR_NAVI_LAYER (uint32_t *)72
+#define EECONFIG_COLOR_MOUS_LAYER (uint32_t *)76
+#define EECONFIG_COLOR_META_LAYER (uint32_t *)80
 
 // Defines names for use in layer keycodes and the keymap
 enum layer_names {
     BASE,
     COMP,
     NAVI,
-    MOUS
+    MOUS,
+    META
 };
 
-#define T_COMP TT(BASE)
+#define T_COMP TT(COMP)
 #define T_NAVI TT(NAVI)
 #define C_LEFT MT(MOD_LCTL, KC_DEL)
 #define C_RIGT MT(MOD_RCTL, KC_BSPC)
 #define T_MOUS TO(MOUS)
 #define T_BASE TO(BASE)
+#define T_META TO(META)
 
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
@@ -63,12 +80,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                    _______, _______,                       _______, _______                             \
     ),
     [MOUS] = LAYOUT(
-        XXXXXXX, KC_WH_U, KC_BTN1, KC_BTN3, KC_BTN2, XXXXXXX,     XXXXXXX, KC_BTN1, KC_BTN3, KC_BTN2, KC_WH_U, XXXXXXX, \
+        T_META,  KC_WH_U, KC_BTN1, KC_BTN3, KC_BTN2, XXXXXXX,     XXXXXXX, KC_BTN1, KC_BTN3, KC_BTN2, KC_WH_U, T_META,  \
         XXXXXXX, KC_WH_D, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R,     KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_WH_D, XXXXXXX, \
         _______, XXXXXXX, KC_ACL0, KC_ACL1, KC_ACL1, T_BASE,      T_BASE,  KC_ACL0, KC_ACL1, KC_ACL2, XXXXXXX, _______, \
         _______, _______, _______,                                                           _______, _______, _______, \
                           _______, _______, _______, _______,     _______, _______, _______, _______,                   \
                                    _______, _______,                       _______, _______                             \
+    ),
+    [META] = LAYOUT(
+        EEP_RST, RESET, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, RESET,   EEP_RST, \
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, T_BASE,      T_BASE,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+        XXXXXXX, XXXXXXX, XXXXXXX,                                                           XXXXXXX, XXXXXXX, XXXXXXX, \
+                          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   \
+                                   XXXXXXX, XXXXXXX,                       XXXXXXX, XXXXXXX                             \
     )
 };
 
@@ -92,4 +117,93 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
     }
     return true;
+}
+
+/* Updates the current LED color */
+void set_color(rgblight_config_t *col) {
+  rgblight_sethsv_noeeprom(
+    (*col).hue,
+    (*col).sat,
+    (*col).val
+  );
+}
+
+/*
+ * Run every time the layer changes.
+ * In here, we update the current LED color.
+ */
+layer_state_t layer_state_set_user(layer_state_t state) {
+    switch (biton32(state)) {
+    case BASE:
+        set_color(&col_base_layer);
+        break;
+    case COMP:
+        set_color(&col_comp_layer);
+        break;
+    case NAVI:
+        set_color(&col_navi_layer);
+        break;
+    case MOUS:
+        set_color(&col_mous_layer);
+        break;
+    case META:
+        set_color(&col_meta_layer);
+        break;
+    default:
+        rgblight_sethsv (HSV_CORAL);
+        break;
+    }
+  return state;
+}
+
+/*
+ * Run each time the keyboard starts at the end of the startup sequence.
+ * In here, we restore the EEPROM-saved colors.
+ */
+void keyboard_post_init_user(void) {
+    col_base_layer.raw = eeprom_read_dword(EECONFIG_COLOR_BASE_LAYER);
+    col_comp_layer.raw = eeprom_read_dword(EECONFIG_COLOR_COMP_LAYER);
+    col_navi_layer.raw = eeprom_read_dword(EECONFIG_COLOR_NAVI_LAYER);
+    col_mous_layer.raw = eeprom_read_dword(EECONFIG_COLOR_MOUS_LAYER);
+    col_meta_layer.raw = eeprom_read_dword(EECONFIG_COLOR_META_LAYER);
+    set_color(&col_base_layer);
+}
+
+/* 
+ * Run at startup only after the EEPROM has been reset.
+ * In here, we configure the initial colors by saving them to the EEPROM.
+ */
+void eeconfig_init_user(void) {
+    // white
+    col_base_layer.hue = 0;
+    col_base_layer.sat = 0;
+    col_base_layer.val = 255;
+
+    // light baby blue
+    col_comp_layer.hue = 131;
+    col_comp_layer.sat = 200;
+    col_comp_layer.val = 255;
+
+    // orange
+    col_navi_layer.hue = 35;
+    col_navi_layer.sat = 250;
+    col_navi_layer.val = 255;
+
+    //pink
+    col_mous_layer.hue = 216;
+    col_mous_layer.sat = 200;
+    col_mous_layer.val = 255;
+
+    //red
+    col_meta_layer.hue = 0;
+    col_meta_layer.sat = 255;
+    col_meta_layer.val = 255;
+
+    eeprom_update_dword(EECONFIG_COLOR_BASE_LAYER, col_base_layer.raw);
+    eeprom_update_dword(EECONFIG_COLOR_COMP_LAYER, col_comp_layer.raw);
+    eeprom_update_dword(EECONFIG_COLOR_NAVI_LAYER, col_navi_layer.raw);
+    eeprom_update_dword(EECONFIG_COLOR_MOUS_LAYER, col_mous_layer.raw);
+    eeprom_update_dword(EECONFIG_COLOR_META_LAYER, col_meta_layer.raw);
+    rgblight_enable();
+    rgblight_mode(1);
 }
