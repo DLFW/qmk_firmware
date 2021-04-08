@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MANUFACTURER Daniel Llin Ferrero
 #define PRODUCT      terminal_b
 
+#define TAPPING_TOGGLE 2
+
 /* key matrix size */
 #define MATRIX_ROWS 10  // 2 * 5 for each split half; split boards are "merged" by their rows
 #define MATRIX_COLS 6
