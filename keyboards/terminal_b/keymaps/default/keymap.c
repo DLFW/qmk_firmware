@@ -221,5 +221,32 @@ void matrix_scan_user(void) {
     SEQ_ONE_KEY(KC_A) {
       SEND_STRING(SS_LSFT("1"));
     }
+    SEQ_ONE_KEY(KC_S) {
+      SEND_STRING(SS_LSFT("2"));
+    }
+    SEQ_ONE_KEY(KC_D) {
+      SEND_STRING(SS_LSFT("3"));
+    }
+    SEQ_ONE_KEY(KC_F) {
+      SEND_STRING(SS_LSFT("4"));
+    }
+    SEQ_ONE_KEY(KC_G) {
+      SEND_STRING(SS_LSFT("5"));
+    }
+    SEQ_ONE_KEY(KC_H) {
+      SEND_STRING(SS_LSFT("6"));
+    }
+    SEQ_ONE_KEY(KC_J) {
+      SEND_STRING(SS_LSFT("7"));
+    }
+    SEQ_ONE_KEY(KC_K) {
+      SEND_STRING(SS_LSFT("8"));
+    }
+    SEQ_ONE_KEY(KC_L) {
+      SEND_STRING(SS_LSFT("9"));
+    }
+    SEQ_ONE_KEY(KC_NUHS) {
+      SEND_STRING(SS_LSFT("0"));
+    }
   }
 }
