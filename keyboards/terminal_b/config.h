@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PRODUCT      terminal_b
 
 #define TAPPING_TOGGLE 2
+#define LEADER_PER_KEY_TIMING
+#define LEADER_TIMEOUT 250
 
 /* key matrix size */
 #define MATRIX_ROWS 10  // 2 * 5 for each split half; split boards are "merged" by their rows
@@ -71,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#    define RGBLIGHT_HUE_STEP 8
 //#    define RGBLIGHT_SAT_STEP 8
 //#    define RGBLIGHT_VAL_STEP 8
-//#    define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */
+#define RGBLIGHT_LIMIT_VAL 200 /* The maximum brightness level */
 //#    define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */
 /*== all animations enable ==*/
 //#    define RGBLIGHT_ANIMATIONS
