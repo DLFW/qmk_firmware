@@ -45,10 +45,10 @@ enum layer_names {
 #define T_BASE TO(BASE)
 #define T_META TO(META)
 
-#define C_LEFT MT(MOD_LCTL, KC_DEL)
-#define C_RIGT MT(MOD_RCTL, KC_BSPC)
-#define A_LEFT KC_LALT
-#define A_RIGT KC_LALT
+#define C_LEFT KC_LCTL  // MT(MOD_LCTL, KC_DEL)
+#define C_RIGT KC_RCTL  // MT(MOD_RCTL, KC_BSPC)
+#define A_LEFT MT(MOD_LALT, KC_DEL)   // KC_LALT
+#define A_RIGT MT(MOD_LALT, KC_BSPC)  // KC_LALT
 
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
