@@ -24,6 +24,7 @@ rgblight_config_t col_meta_layer;
 rgblight_config_t *active_color = 0;
 uint8_t cc_keys = 0;
 
+
 #define EECONFIG_COLOR_BASE_LAYER (uint32_t *)64
 #define EECONFIG_COLOR_COMP_LAYER (uint32_t *)68
 #define EECONFIG_COLOR_NAVI_LAYER (uint32_t *)72
@@ -38,6 +39,12 @@ enum layer_names {
     MOUS,
     META
 };
+
+int current_layer = BASE;
+int leader_on = 0;
+int swap_on = 0;
+
+int test_inc = 0;
 
 #define T_COMP TT(COMP)
 #define T_NAVI TT(NAVI)
@@ -124,11 +131,57 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 /* Updates the current LED color */
 void set_color(rgblight_config_t *col) {
-  rgblight_sethsv_noeeprom(
-    (*col).hue,
-    (*col).sat,
-    (*col).val
-  );
+  //rgblight_sethsv_noeeprom(
+  //  (*col).hue,
+  //  (*col).sat,
+  //  (*col).val
+  //);
+  //rgblight_sethsv_range(0, 255, 200, 5, 7);
+  //rgblight_sethsv_range(0, 255, 200, 13, 15);
+  //led[5].r = 250;
+  //led[5].g = 0;
+  //led[5].b = 0;
+  //led[6].r = 0;
+  //led[6].g = 250;
+  //led[6].b = 0;
+  //led[13].r = 250;
+  //led[13].g = 0;
+  //led[13].b = 0;
+  //led[14].r = 0;
+  //led[14].g = 0;
+  //led[14].b = 250;
+  led[test_inc].r = 0;
+  led[test_inc].g = 0;
+  led[test_inc].b = 250;
+  rgblight_set();
+  test_inc +=1;
+  if (test_inc > 15) test_inc = 0;
+  //rgblight_sethsv_slave(0, 255, 200);
+  //rgblight_sethsv_range(0, 255, 200, (uint8_t)RGBLED_NUM / 2, (uint8_t)RGBLED_NUM);
+  //rgblight_sethsv_slave
+}
+
+void update_leds(void) {
+    switch (current_layer) {
+        case BASE:
+            set_color(&col_base_layer);
+            break;
+        case COMP:
+            set_color(&col_comp_layer);
+            break;
+        case NAVI:
+            set_color(&col_navi_layer);
+            break;
+        case MOUS:
+            set_color(&col_mous_layer);
+            break;
+        case META:
+            set_color(&col_meta_layer);
+            break;
+        default:
+            rgblight_sethsv (HSV_CORAL);
+            break;
+    }
 }
 
 /*
@@ -136,27 +189,17 @@ void set_color(rgblight_config_t *col) {
  * In here, we update the current LED color.
  */
 layer_state_t layer_state_set_user(layer_state_t state) {
-    switch (biton32(state)) {
-    case BASE:
-        set_color(&col_base_layer);
-        break;
-    case COMP:
-        set_color(&col_comp_layer);
-        break;
-    case NAVI:
-        set_color(&col_navi_layer);
-        break;
-    case MOUS:
-        set_color(&col_mous_layer);
-        break;
-    case META:
-        set_color(&col_meta_layer);
-        break;
-    default:
-        rgblight_sethsv (HSV_CORAL);
-        break;
-    }
-  return state;
+    current_layer = biton32(state);
+    update_leds();
+    return state;
+}
+
+void leader_start(void) {
+  // sequence started
+}
+
+void leader_end(void) {
+  // sequence ended (no success/failure detection)
 }
 
 /*
@@ -170,6 +213,9 @@ void keyboard_post_init_user(void) {
     col_mous_layer.raw = eeprom_read_dword(EECONFIG_COLOR_MOUS_LAYER);
     col_meta_layer.raw = eeprom_read_dword(EECONFIG_COLOR_META_LAYER);
     set_color(&col_base_layer);
+    //rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING);
+    //rgblight_mode_noeeprom(RGBLIGHT_MODE_KNIGHT);
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
 }
 
 /* 
