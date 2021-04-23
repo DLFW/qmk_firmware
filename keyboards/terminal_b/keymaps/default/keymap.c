@@ -1,4 +1,5 @@
 /* Copyright 2021 Daniel Llin Ferrero
+      unregister_code(KC_LSFT);
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +71,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,        KC_H,    KC_J,    KC_K,    KC_L,    KC_NUHS, KC_RBRC, \
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT, \
         KC_RALT, SH_TT,   KC_LEAD,                                                           KC_LEAD, SH_TT, KC_RALT, \
-                          KC_LGUI, T_COMP,  KC_SPC,  T_NAVI,      T_NAVI,  KC_ENT,  T_COMP,  KC_RGUI,                   \
+                          KC_LGUI, KC_SPC,  T_COMP,  T_NAVI,      T_NAVI,  T_COMP,  KC_ENT,  KC_RGUI,                   \
                                    C_LEFT,  A_LEFT,                        A_RIGT,  C_RIGT                              \
     ),
     [COMP] = LAYOUT(
@@ -131,11 +132,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 /* Updates the current LED color */
 void set_color(rgblight_config_t *col) {
-  //rgblight_sethsv_noeeprom(
-  //  (*col).hue,
-  //  (*col).sat,
-  //  (*col).val
-  //);
+  rgblight_sethsv_noeeprom(
+    (*col).hue,
+    (*col).sat,
+    (*col).val
+  );
   //rgblight_sethsv_range(0, 255, 200, 5, 7);
   //rgblight_sethsv_range(0, 255, 200, 13, 15);
   //led[5].r = 250;
@@ -150,12 +151,12 @@ void set_color(rgblight_config_t *col) {
   //led[14].r = 0;
   //led[14].g = 0;
   //led[14].b = 250;
-  led[test_inc].r = 0;
-  led[test_inc].g = 0;
-  led[test_inc].b = 250;
-  rgblight_set();
-  test_inc +=1;
-  if (test_inc > 15) test_inc = 0;
+  //led[test_inc].r = 0;
+  //led[test_inc].g = 0;
+  //led[test_inc].b = 250;
+  //rgblight_set();
+  //test_inc +=1;
+  //if (test_inc > 15) test_inc = 0;
   //rgblight_sethsv_slave(0, 255, 200);
   //rgblight_sethsv_range(0, 255, 200, (uint8_t)RGBLED_NUM / 2, (uint8_t)RGBLED_NUM);
   //rgblight_sethsv_slave
@@ -293,6 +294,34 @@ void matrix_scan_user(void) {
     }
     SEQ_ONE_KEY(KC_NUHS) {
       SEND_STRING(SS_LSFT("0"));
+    }
+    SEQ_ONE_KEY(KC_V) {  // pipe
+      register_code(KC_RALT);
+      register_code(KC_NUBS);
+      unregister_code(KC_NUBS);
+      unregister_code(KC_RALT);
+    }
+    SEQ_ONE_KEY(KC_COMM) {
+      SEND_STRING(SS_RALT("8"));
+    }
+    SEQ_ONE_KEY(KC_DOT) {
+      SEND_STRING(SS_RALT("9"));
+    }
+    SEQ_ONE_KEY(KC_I) {
+      SEND_STRING(SS_RALT("7"));
+    }
+    SEQ_ONE_KEY(KC_O) {
+      SEND_STRING(SS_RALT("0"));
+    }
+    SEQ_ONE_KEY(KC_M) {  // less than
+      register_code(KC_NUBS);
+      unregister_code(KC_NUBS);
+    }
+    SEQ_ONE_KEY(KC_SLSH) {  // greater than
+      register_code(KC_LSFT);
+      register_code(KC_NUBS);
+      unregister_code(KC_NUBS);
+      unregister_code(KC_LSFT);
     }
   }
 }
