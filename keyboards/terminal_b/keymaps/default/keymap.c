@@ -92,7 +92,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [MOUS] = LAYOUT(
         T_META,  KC_WH_U, KC_BTN1, KC_BTN3, KC_BTN2, XXXXXXX,     XXXXXXX, KC_BTN1, KC_BTN3, KC_BTN2, KC_WH_U, T_META,  \
-        XXXXXXX, KC_WH_D, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R,     KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_WH_D, XXXXXXX, \
+        _______, KC_WH_D, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R,     KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_WH_D, XXXXXXX, \
         _______, XXXXXXX, KC_ACL0, KC_ACL1, KC_ACL1, T_BASE,      T_BASE,  KC_ACL0, KC_ACL1, KC_ACL2, XXXXXXX, _______, \
         _______, _______, _______,                                                           _______, _______, _______, \
                           _______, _______, _______, _______,     _______, _______, _______, _______,                   \
@@ -313,14 +313,36 @@ void matrix_scan_user(void) {
     SEQ_ONE_KEY(KC_O) {
       SEND_STRING(SS_RALT("0"));
     }
-    SEQ_ONE_KEY(KC_M) {  // less than
+    SEQ_ONE_KEY(KC_U) {  // less than
       register_code(KC_NUBS);
       unregister_code(KC_NUBS);
     }
-    SEQ_ONE_KEY(KC_SLSH) {  // greater than
+    SEQ_ONE_KEY(KC_P) {  // greater than
       register_code(KC_LSFT);
       register_code(KC_NUBS);
       unregister_code(KC_NUBS);
+      unregister_code(KC_LSFT);
+    }
+    SEQ_ONE_KEY(KC_SLSH) {  // question mark
+      register_code(KC_LSFT);
+      register_code(KC_MINS);
+      unregister_code(KC_MINS);
+      unregister_code(KC_LSFT);
+    }
+    SEQ_ONE_KEY(KC_RBRC) {  // reversed question mark
+      register_code(KC_LSFT);
+      register_code(KC_RALT);
+      register_code(KC_MINS);
+      unregister_code(KC_MINS);
+      unregister_code(KC_RALT);
+      unregister_code(KC_LSFT);
+    }
+    SEQ_ONE_KEY(KC_Q) {  // reversed exclamation mark
+      register_code(KC_LSFT);
+      register_code(KC_RALT);
+      register_code(KC_1);
+      unregister_code(KC_1);
+      unregister_code(KC_RALT);
       unregister_code(KC_LSFT);
     }
   }
