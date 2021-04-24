@@ -32,6 +32,12 @@ uint8_t cc_keys = 0;
 #define EECONFIG_COLOR_MOUS_LAYER (uint32_t *)76
 #define EECONFIG_COLOR_META_LAYER (uint32_t *)80
 
+#define CC_BIT_BASE 1
+#define CC_BIT_COMP 2
+#define CC_BIT_NAVI 4
+#define CC_BIT_MOUS 8
+#define CC_BIT_META 16
+
 // Defines names for use in layer keycodes and the keymap
 enum layer_names {
     BASE,
@@ -60,8 +66,19 @@ int test_inc = 0;
 
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
-    QMKBEST = SAFE_RANGE,
-    QMKURL
+    // set color keys
+    SC_BASE = SAFE_RANGE,
+    SC_COMP,
+    SC_NAVI,
+    SC_MOUS,
+    SC_META,
+    // change color keys
+    CC_VU,
+    CC_VD,
+    CC_SU,
+    CC_SD,
+    CC_HU,
+    CC_HD,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -99,36 +116,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                    _______, _______,                       _______, _______                             \
     ),
     [META] = LAYOUT(
-        EEP_RST, RESET, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, RESET,   EEP_RST, \
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+        EEP_RST, RESET,   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, CC_HU,   CC_SU,   CC_VU,   RESET,   EEP_RST, \
+        XXXXXXX, SC_BASE, SC_COMP, SC_NAVI, SC_MOUS, SC_META,     XXXXXXX, CC_HD,   CC_SD,   CC_VD,   XXXXXXX, XXXXXXX, \
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, T_BASE,      T_BASE,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
         XXXXXXX, XXXXXXX, XXXXXXX,                                                           XXXXXXX, XXXXXXX, XXXXXXX, \
                           XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   \
                                    XXXXXXX, XXXXXXX,                       XXXXXXX, XXXXXXX                             \
     )
 };
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case QMKBEST:
-            if (record->event.pressed) {
-                // when keycode QMKBEST is pressed
-                SEND_STRING("QMK is the best thing ever!");
-            } else {
-                // when keycode QMKBEST is released
-            }
-            break;
-        case QMKURL:
-            if (record->event.pressed) {
-                // when keycode QMKURL is pressed
-                SEND_STRING("https://qmk.fm/\n");
-            } else {
-                // when keycode QMKURL is released
-            }
-            break;
-    }
-    return true;
-}
 
 /* Updates the current LED color */
 void set_color(rgblight_config_t *col) {
@@ -160,6 +155,120 @@ void set_color(rgblight_config_t *col) {
   //rgblight_sethsv_slave(0, 255, 200);
   //rgblight_sethsv_range(0, 255, 200, (uint8_t)RGBLED_NUM / 2, (uint8_t)RGBLED_NUM);
   //rgblight_sethsv_slave
+}
+
+void color_key_event(
+  keyrecord_t *record,
+  rgblight_config_t *col,
+  uint8_t cc_bit,
+  uint32_t *eeprom_address
+) {
+
+  if (record->event.pressed) {
+    if (cc_keys == 0) {
+        active_color = col;
+        cc_keys |= cc_bit;
+        set_color(active_color);
+    }
+  } else {
+    if (cc_keys & cc_bit) {
+        cc_keys ^= cc_bit;
+        if (cc_keys == 0) {
+            active_color = 0;
+            eeprom_update_dword(eeprom_address, (*col).raw);
+            set_color(&col_meta_layer);
+        }
+    }
+  }
+}
+
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case SC_BASE:
+      color_key_event(
+        record,
+        &col_base_layer,
+        CC_BIT_BASE,
+        EECONFIG_COLOR_BASE_LAYER
+      );
+      return true;
+    case SC_COMP:
+      color_key_event(
+        record,
+        &col_comp_layer,
+        CC_BIT_COMP,
+        EECONFIG_COLOR_COMP_LAYER
+      );
+      return true;
+    case SC_NAVI:
+      color_key_event(
+        record,
+        &col_navi_layer,
+        CC_BIT_NAVI,
+        EECONFIG_COLOR_NAVI_LAYER
+      );
+      return true;
+    case SC_MOUS:
+      color_key_event(
+        record,
+        &col_mous_layer,
+        CC_BIT_MOUS,
+        EECONFIG_COLOR_MOUS_LAYER
+      );
+      return true;
+    case SC_META:
+      color_key_event(
+        record,
+        &col_meta_layer,
+        CC_BIT_META,
+        EECONFIG_COLOR_META_LAYER
+      );
+      return true;
+    case CC_VU:
+      if (active_color) {
+          active_color->val += 5;
+          if (active_color->val > RGBLIGHT_LIMIT_VAL) {
+              active_color->val = 0;
+          }
+          set_color(active_color);
+      }
+      return true;
+    case CC_VD:
+      if (active_color) {
+          active_color->val -= 5;
+          if (active_color->val > RGBLIGHT_LIMIT_VAL) {
+              active_color->val = RGBLIGHT_LIMIT_VAL;
+          }
+          set_color(active_color);
+      }
+      return true;
+    case CC_HU:
+      if (active_color) {
+          active_color->hue += 2;
+          set_color(active_color);
+      }
+      return true;
+    case CC_HD:
+      if (active_color) {
+          active_color->hue -= 4;
+          set_color(active_color);
+      }
+      return true;
+    case CC_SU:
+      if (active_color) {
+          active_color->sat += 5;
+          set_color(active_color);
+      }
+      return true;
+    case CC_SD:
+      if (active_color) {
+          active_color->sat -= 5;
+          set_color(active_color);
+      }
+      return true;
+  }
+  return true;
 }
 
 void update_leds(void) {
