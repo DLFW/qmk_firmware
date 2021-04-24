@@ -70,8 +70,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,        KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,  \
         KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,        KC_H,    KC_J,    KC_K,    KC_L,    KC_NUHS, KC_RBRC, \
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT, \
-        KC_RALT, SH_TT,   KC_LEAD,                                                           KC_LEAD, SH_TT, KC_RALT, \
-                          KC_LGUI, KC_SPC,  T_COMP,  T_NAVI,      T_NAVI,  T_COMP,  KC_ENT,  KC_RGUI,                   \
+        KC_RALT, SH_TT,   KC_LEAD,                                                           KC_LEAD, SH_TT,   KC_RALT, \
+                          KC_LGUI, T_COMP,  KC_SPC, T_NAVI,      T_NAVI,  KC_ENT, T_COMP, KC_RGUI,                      \
                                    C_LEFT,  A_LEFT,                        A_RIGT,  C_RIGT                              \
     ),
     [COMP] = LAYOUT(
@@ -229,19 +229,19 @@ void eeconfig_init_user(void) {
     col_base_layer.sat = 0;
     col_base_layer.val = 255;
 
-    // light baby blue
-    col_comp_layer.hue = 131;
-    col_comp_layer.sat = 200;
+    // blue
+    col_comp_layer.hue = 170;
+    col_comp_layer.sat = 255;
     col_comp_layer.val = 255;
 
     // orange
-    col_navi_layer.hue = 35;
-    col_navi_layer.sat = 250;
+    col_navi_layer.hue = 25;
+    col_navi_layer.sat = 255;
     col_navi_layer.val = 255;
 
     //pink
-    col_mous_layer.hue = 216;
-    col_mous_layer.sat = 200;
+    col_mous_layer.hue = 205;
+    col_mous_layer.sat = 255;
     col_mous_layer.val = 255;
 
     //red
