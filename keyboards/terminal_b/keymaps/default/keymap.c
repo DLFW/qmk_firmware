@@ -59,11 +59,6 @@ int test_inc = 0;
 #define T_BASE TO(BASE)
 #define T_META TO(META)
 
-#define C_LEFT KC_LCTL  // MT(MOD_LCTL, KC_DEL)
-#define C_RIGT KC_RCTL  // MT(MOD_RCTL, KC_BSPC)
-#define A_LEFT MT(MOD_LALT, KC_DEL)   // KC_LALT
-#define A_RIGT MT(MOD_LALT, KC_BSPC)  // KC_LALT
-
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
     // set color keys
@@ -81,15 +76,22 @@ enum custom_keycodes {
     CC_HD,
 };
 
+//#define C_LEFT KC_LCTL  // MT(MOD_LCTL, KC_DEL)
+//#define C_RIGT KC_RCTL  // MT(MOD_RCTL, KC_BSPC)
+//#define A_LEFT MT(MOD_LALT, KC_DEL)   // KC_LALT
+//#define A_RIGT MT(MOD_LALT, KC_BSPC)  // KC_LALT
+#define MT_RALT MT(MOD_RALT, KC_DEL)
+#define MT_LALT MT(MOD_LALT, KC_BSPC)
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Base */
     [BASE] = LAYOUT(
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,        KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,  \
         KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,        KC_H,    KC_J,    KC_K,    KC_L,    KC_NUHS, KC_RBRC, \
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT, \
-        KC_RALT, SH_TT,   KC_LEAD,                                                           KC_LEAD, SH_TT,   KC_RALT, \
-                          T_COMP,  KC_SPC,  T_NAVI,  KC_LGUI,     KC_RGUI, T_NAVI,  KC_ENT,  T_COMP,                    \
-                                   C_LEFT,  A_LEFT,                        A_RIGT,  C_RIGT                              \
+        KC_LCTL, SH_TT,   KC_LEAD,                                                           KC_LEAD, SH_TT,   KC_RCTL, \
+                          KC_LGUI, KC_SPC,  T_COMP,  T_NAVI,     T_NAVI,   T_COMP,  KC_ENT,  KC_RGUI,                   \
+                                   KC_LEAD, MT_RALT,                       MT_LALT, KC_LEAD                             \
     ),
     [COMP] = LAYOUT(
         _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,       KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  \
